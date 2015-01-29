@@ -22,9 +22,12 @@ public class Machine {
     ProcessManager pm = new ProcessManager();
     boolean gameOver = false;
     
+    public void newProcess(){
+        pm.makeProcess(new Process());
+    }
+    
     public void run(){
-        Process p = new Process("register");
-        pm.makeProcess(p);
+        pm.makeProcess(new Process("register"));
         
         while (!gameOver){
             try {

@@ -10,8 +10,8 @@ package canuhackme;
  * @author Andrzej
  */
 public class UnknownCommandException extends Exception {
-    Words problem;
-    public UnknownCommandException(Words ex){
+    Queue problem;
+    public UnknownCommandException(Queue ex){
         problem = ex;
     }
 }
