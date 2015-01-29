@@ -5,6 +5,10 @@
  */
 package canuhackme;
 
+import static java.lang.Thread.sleep;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 
 /**
  *  main class of this
@@ -13,15 +17,29 @@ package canuhackme;
 public class Machine {
             
     public static final Machine mainF = new Machine();
-    
     public final String mainFileName = "trust_me.hak";
     
-    
+    ProcessManager pm = new ProcessManager();
+    boolean gameOver = false;
     
     public void run(){
+        Process p = new Process("register");
+        pm.makeProcess(p);
         
+        while (!gameOver){
+            try {
+                sleep(500);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Machine.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        // czeka na zamkniecie
+        //TODO: Zapisz prace
     }
     
+    public void gameOver(){
+        gameOver = true;
+    }
     
     public static void main(String... args){
         Machine.mainF.run();
