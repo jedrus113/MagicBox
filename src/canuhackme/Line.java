@@ -11,7 +11,14 @@ package canuhackme;
     */
 public class Line {
     private Line next, prev;
-    public Queue<String> word;
+    public String word;
+    
+    
+    
+    public Args args(){
+        return new Args(word);
+    }
+            
     
     public Line(Line p, Line n){
         next = n;
@@ -30,19 +37,24 @@ public class Line {
     
     public void add(String w){
         if(word == null)
-            word = new Queue<String>(w);
+            word = w;
         else
-            word = word.add(w);
+            word += w;
     }
 
     public void addCh(char c){
         if(word == null)
-            word = new Queue<String>("" + c);
+            word = "" + c;
         else
-            word.item += c;
+            word += c;
     }
-    
-    public void nextWord(){
-        add("");
+
+    public boolean removeLast() {
+        if(word == null || word.equals(""))
+            return false;
+        else{
+            word = word.substring(0, word.length()-1);
+            return true;
+        }
     }
 }

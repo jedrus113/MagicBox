@@ -8,6 +8,10 @@ package canuhackme;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JTextArea;
+import javax.swing.text.BadLocationException;
 
 /**
  *
@@ -16,70 +20,77 @@ import java.awt.event.KeyListener;
 public class Console implements KeyListener {
     public final String prompt = "-> ";
     private final Process proc;
+    public final JTextArea text;
     Line line = null;
     
     public Console(Process proc){
         this.proc = proc;
+        text = new JTextArea();
+        text.setEditable(false);
+        text.setBackground(Color.BLACK);
+        text.setForeground(Color.GREEN);
+        proc.frame.add(text);
+        proc.frame.setTitle("Console");
     }
     
+    public void showOnScreen(char s){
+        if(s == 8){  try {
+            //Backpace
+            text.setText(text.getText(0, text.getText().length()-1));
+            /*
+            proc.text.moveCaretPosition(proc.text.getText().length()-1);
+            proc.text.replaceSelection("");
+            */
+            } catch (BadLocationException ex) {
+                Logger.getLogger(Console.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else 
+            text.append("" + s);
+        //System.out.print(s);
+    }
     public void showOnScreen(String s){
-        proc.text.append(s);
+        text.append(s);
         //System.out.print(s);
     }
     
     public void read(){
         char temp;
         
-        proc.text.addKeyListener(this);
+        text.addKeyListener(this);
         
         showOnScreen("Loading console.. OK\n");
         showOnScreen(prompt);
         
     }
     
-    int exeAction(Queue cmd) throws UnknownCommandException{
-        switch((String)cmd.item){
-            case "new":
-                Machine.mainF.newProcess();
-                break;
-            default:
-                throw new UnknownCommandException(cmd);
-        }
-        
-        
-        return 0;
-    }
 
     @Override
     public void keyTyped(KeyEvent e) {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void keyPressed(KeyEvent e) {
         if(Character.hashCode(e.getKeyChar()) < 65535) {
-            showOnScreen("" + e.getKeyChar());
-            
-            if(e.getKeyChar() == '\n'){
+            if(e.getKeyChar() == 8){
                 if(line != null)
-                    try {
-                        exeAction(line.word.first());
-                } catch (UnknownCommandException ex) {
-                    showOnScreen("Unknown cmd " + ex.problem.item + " in\n");
-                    showOnScreen(ex.problem.toString() + "\n");
-                }
-                line = null;
-                showOnScreen(prompt);
-            }
-            else if(e.getKeyChar() == ' '){
-                if(line != null && line.word.item.length() > 0)
-                    line.nextWord();
-            }
-            else{
-                if(line == null)
-                    line = new Line();
+                    if(line.removeLast())
+                        showOnScreen(e.getKeyChar());
+            } else {
+                showOnScreen(e.getKeyChar());
 
-                line.addCh(e.getKeyChar());
+                if(e.getKeyChar() == '\n'){
+                    if(line != null)
+                        try {
+                            proc.exeAction(line.args());
+                    } catch (UnknownCommandException ex) {
+                        showOnScreen("Unknown cmd " + ex.problem + " in\n");
+                        showOnScreen(ex.problem.fullText()+ "\n");
+                    }
+                    line = null;
+                    showOnScreen(prompt);
+                }
+                else{
+                    if(line == null)
+                        line = new Line();
+
+                    line.addCh(e.getKeyChar());
+                }
             }
         } else if(e.getKeyCode() == 38) {
             //gora
@@ -88,6 +99,9 @@ public class Console implements KeyListener {
             //dol
         }
     }
+
+    @Override
+    public void keyPressed(KeyEvent e) {}
 
     @Override
     public void keyReleased(KeyEvent e) {

@@ -11,7 +11,6 @@ package canuhackme;
  */
 public class ProcessManager{
     public class ProcessList{
-
         public ProcessList pNext, pPrev;
         public final Thread t;
 
@@ -24,9 +23,10 @@ public class ProcessManager{
                 pNext.pPrev = pPrev;
             if(pPrev != null)
                 pPrev.pNext = pNext;
-
+            
             if(pPrev == null && pNext == null)
                 Machine.mainF.gameOver();
+            
         }
 
         public ProcessList(Process p){
@@ -56,7 +56,6 @@ public class ProcessManager{
             p = new ProcessList(n);
         else
             p = p.add(n);
-
 
         p.t.start();
     }

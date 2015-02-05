@@ -22,22 +22,27 @@ public class Machine {
     ProcessManager pm = new ProcessManager();
     boolean gameOver = false;
     
-    public void newProcess(){
-        pm.makeProcess(new Process());
+    
+    public void newProcess(String name, Args cmds){
+        if(name == null)
+            name = "new";
+        pm.makeProcess(new Process(name, cmds));
     }
     
     public void run(){
-        pm.makeProcess(new Process("register"));
+        pm.makeProcess(new Process("register", null));
         
         while (!gameOver){
             try {
-                sleep(500);
+                sleep(1000);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Machine.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         // czeka na zamkniecie
         //TODO: Zapisz prace
+        System.out.println("Koncze..");
+        System.exit(0); //nie ma chuja, jak to się konczy to wszystko sie konczy
     }
     
     public void gameOver(){

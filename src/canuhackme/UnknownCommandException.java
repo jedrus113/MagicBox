@@ -5,13 +5,14 @@
  */
 package canuhackme;
 
+
 /**
  *
  * @author Andrzej
  */
 public class UnknownCommandException extends Exception {
-    Queue problem;
-    public UnknownCommandException(Queue ex){
+    Args problem;
+    public UnknownCommandException(Args ex){
         problem = ex;
     }
 }
