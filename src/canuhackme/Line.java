@@ -16,6 +16,8 @@ public class Line {
     
     
     public Args args(){
+        if(word.replaceAll(" ", "").equals(""))
+            return null;
         return new Args(word);
     }
             

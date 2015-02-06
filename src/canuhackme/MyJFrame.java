@@ -25,7 +25,6 @@ public class MyJFrame extends JFrame {
     @Override
     public void dispose(){
         super.dispose();
-        
         proc.remove();
     }
 }

@@ -5,6 +5,7 @@
  */
 package canuhackme;
 
+import canuhackme.programs.Snake;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -19,53 +20,74 @@ import javax.swing.text.BadLocationException;
  */
 public class Console implements KeyListener {
     public final String prompt = "-> ";
-    private final Process proc;
+    public final Process proc;
     public final JTextArea text;
+    private KeyListener kl = null;
+    private Stopable actTask = null;
     Line line = null;
     
     public Console(Process proc){
         this.proc = proc;
+        
         text = new JTextArea();
+        text.addKeyListener(this);
         text.setEditable(false);
+        proc.frame.add(text);
+        showOnScreen("Loading console.. OK\n");
+        resetConsole();
+    }
+    
+    public void resetConsole(){
+        proc.frame.setTitle("Console");
+        proc.frame.setResizable(false);
+        text.setRows(20);
+        text.setColumns(40);
+        text.setAutoscrolls(true);
         text.setBackground(Color.BLACK);
         text.setForeground(Color.GREEN);
-        proc.frame.add(text);
-        proc.frame.setTitle("Console");
+        
+        showOnScreen("\n" + prompt);
+        proc.frame.pack();
+        
+        line = null;
+        actTask = null;
+        kl = null;
+    }
+    
+    public void giveKeyListener(KeyListener kl){
+        this.kl = kl;
+    }
+    
+    private boolean amIKeyListener(){
+        return (kl == null);
     }
     
     public void showOnScreen(char s){
         if(s == 8){  try {
             //Backpace
             text.setText(text.getText(0, text.getText().length()-1));
-            /*
-            proc.text.moveCaretPosition(proc.text.getText().length()-1);
-            proc.text.replaceSelection("");
-            */
             } catch (BadLocationException ex) {
                 Logger.getLogger(Console.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } else 
-            text.append("" + s);
+        } else
+            showOnScreen("" + s);
         //System.out.print(s);
     }
     public void showOnScreen(String s){
         text.append(s);
         //System.out.print(s);
     }
-    
-    public void read(){
-        char temp;
-        
-        text.addKeyListener(this);
-        
-        showOnScreen("Loading console.. OK\n");
-        showOnScreen(prompt);
-        
-    }
-    
 
     @Override
     public void keyTyped(KeyEvent e) {
+        if(e.getKeyChar() == 27)
+            return;
+        
+        if(kl != null){
+            kl.keyTyped(e);
+            return;
+        }
+            
         if(Character.hashCode(e.getKeyChar()) < 65535) {
             if(e.getKeyChar() == 8){
                 if(line != null)
@@ -77,13 +99,14 @@ public class Console implements KeyListener {
                 if(e.getKeyChar() == '\n'){
                     if(line != null)
                         try {
-                            proc.exeAction(line.args());
+                            exeAction(line.args());
                     } catch (UnknownCommandException ex) {
                         showOnScreen("Unknown cmd " + ex.problem + " in\n");
                         showOnScreen(ex.problem.fullText()+ "\n");
                     }
                     line = null;
-                    showOnScreen(prompt);
+                    if(amIKeyListener())
+                        showOnScreen(prompt);
                 }
                 else{
                     if(line == null)
@@ -101,11 +124,58 @@ public class Console implements KeyListener {
     }
 
     @Override
-    public void keyPressed(KeyEvent e) {}
+    public void keyPressed(KeyEvent e) {
+        if(e.getKeyChar() == 27){    //escape
+            if(actTask != null)
+                actTask.stop();
+            resetConsole();
+            return;
+        }
+        else if(kl != null){
+            kl.keyPressed(e);
+            return;
+        }
+    }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if(kl != null){
+            kl.keyReleased(e);
+            return;
+        }
+    }
+    
+    public int exeAction(Args arg) throws UnknownCommandException{
+        if(arg == null)
+            return 1;
+        switch(arg.get().toLowerCase()){
+            case "new":
+                Machine.mainF.newProcess(arg.getArgsOnly().fullText(), null);
+                break;
+            case "exit":
+                proc.remove();
+                break;
+            case "snake":
+                actTask = new Snake(this);
+                break;
+            case "cls":
+                text.setText("");
+                break;
+            case "title":
+                proc.frame.setTitle(arg.getArgsOnly().fullText());
+                break;
+            case "wait":
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Console.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                break;
+            default:
+                throw new UnknownCommandException(arg);
+        }
+        
+        return 0;
     }
     
 }
