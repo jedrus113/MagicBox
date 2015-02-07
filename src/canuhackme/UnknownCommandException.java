@@ -5,6 +5,8 @@
  */
 package canuhackme;
 
+import javax.swing.JOptionPane;
+
 
 /**
  *
@@ -14,5 +16,13 @@ public class UnknownCommandException extends Exception {
     Args problem;
     public UnknownCommandException(Args ex){
         problem = ex;
+    }
+    
+    public String ProblemMessage(){
+        return "Unknown command " + problem.get(0) + " in:\n" + problem;
+    }
+    
+    public void showErrorMassage(){
+        JOptionPane.showMessageDialog(null, ProblemMessage());
     }
 }

@@ -9,7 +9,7 @@ package canuhackme;
  *
  * @author Andrzej
  */
-public class ProcessManager{
+public class ProcessManager {
     public class ProcessList{
         public ProcessList pNext, pPrev;
         public final Thread t;
@@ -25,7 +25,7 @@ public class ProcessManager{
                 pPrev.pNext = pNext;
             
             if(pPrev == null && pNext == null)
-                Machine.mainF.gameOver();
+                Machine.mainF.stop(Stopable.ALL);
             
         }
 
@@ -59,4 +59,5 @@ public class ProcessManager{
 
         p.t.start();
     }
+    
 }

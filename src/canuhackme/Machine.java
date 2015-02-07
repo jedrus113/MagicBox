@@ -5,48 +5,38 @@
  */
 package canuhackme;
 
-import static java.lang.Thread.sleep;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 
 /**
  *  main class of this
  * @author Andrzej
  */
-public class Machine {
+public class Machine extends Stopable {
             
     public static final Machine mainF = new Machine();
     public final String mainFileName = "trust_me.hak";
     
     ProcessManager pm = new ProcessManager();
-    boolean gameOver = false;
     
     
-    public void newProcess(String name, Args cmds){
-        if(name == null)
-            name = "new";
-        pm.makeProcess(new Process(name, cmds));
+    public void newProcess(Args cmds){
+        pm.makeProcess(new Process(cmds));
     }
     
     public void run(){
-        pm.makeProcess(new Process("register", null));
+        pm.makeProcess(new Process(new Args("cmd")));
         
-        while (!gameOver){
-            try {
-                sleep(1000);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(Machine.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        // czeka na zamkniecie
+    }
+    
+    @Override
+    public synchronized void stop(boolean w){
+        if(isStop)
+            return;
+        
+        super.stop(w);
+        
         //TODO: Zapisz prace
         System.out.println("Koncze..");
         System.exit(0); //nie ma chuja, jak to się konczy to wszystko sie konczy
-    }
-    
-    public void gameOver(){
-        gameOver = true;
     }
     
     public static void main(String... args){

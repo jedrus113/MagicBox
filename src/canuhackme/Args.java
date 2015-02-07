@@ -6,7 +6,7 @@
 package canuhackme;
 
 /**
- *
+ * nieda sie utworyc instancji klasy arg bez argumentow
  * @author Andrzej
  */
 public class Args {
@@ -22,6 +22,9 @@ public class Args {
                     size++;
                 }
             }
+            
+            if(size == 0)
+                throw new IllegalArgumentException();
             
             args = new String[size];
             p=0;
@@ -60,10 +63,6 @@ public class Args {
         
         @Override
         public String toString(){
-            return args[p];
-        }
-        
-        public String fullText(){
             String r = "";
             
             for(String arg : args)
@@ -82,8 +81,13 @@ public class Args {
             
             for(; s < args.length; s++)
                 arg += args[s] + " ";
+            try{
+                Args r = new Args(arg);
+                return r;
+            } catch (IllegalArgumentException ex){
+                return null;
+            }
             
-            return new Args(arg);
         }
         
     }

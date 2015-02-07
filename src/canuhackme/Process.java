@@ -5,15 +5,15 @@
  */
 package canuhackme;
 
-import java.awt.FlowLayout;
+import canuhackme.programs.Console;
 
 /**
  *
  * @author Andrzej
  */
-public class Process implements Runnable {
+public class Process extends Stopable implements Runnable {
     private ProcessManager.ProcessList th = null;
-    public MyJFrame frame = null;
+    protected final Args arg;
     
     public void setT(ProcessManager.ProcessList th){
         if(this.th == null)
@@ -24,19 +24,32 @@ public class Process implements Runnable {
     
     @Override
     public void run() {
-        frame.setVisible(true);
-        new Console(this);
+        if(arg == null)
+            new UnknownCommandException(arg).showErrorMassage();
+        
+        switch(arg.get(0)){
+            case "cmd":
+                up = new Console(this, arg.getArgsOnly());
+                break;
+            default:
+                new UnknownCommandException(arg).showErrorMassage();
+                stop(ALL);
+        }
     }
     
-    public void remove(){
-        if(frame.isVisible())
-            frame.dispose();
-        th.remove();
+    @Override
+    public void stop(boolean w){
+        if(!isStop){
+            super.stop(w);
+            th.remove();
+        }
     }
     
-    public Process(String p, Args cmd){
-        frame = new MyJFrame(p, this);
-        frame.setLayout(new FlowLayout());
+    public Process(Args cmd){
+        if(cmd == null)
+            arg = new Args("cmd");
+        else
+            arg = cmd;
     }
     
     

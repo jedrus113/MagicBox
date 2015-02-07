@@ -6,7 +6,6 @@
 package canuhackme.programs;
 
 import canuhackme.Args;
-import canuhackme.Console;
 import canuhackme.Stopable;
 import canuhackme.UnknownCommandException;
 import java.awt.event.ActionEvent;
@@ -21,13 +20,13 @@ import javax.swing.Timer;
  *
  * @author Andrzej
  */
-public class Snake implements ActionListener, KeyListener, Stopable {
+public class Snake extends Stopable implements ActionListener, KeyListener {
     Timer timer;
     Console con;
     char gameField[][];
     
     public Snake(Console con){
-        this.con = con;
+        down = this.con = con;
         con.giveKeyListener(this);
         try {
             con.exeAction(new Args("cls"));
@@ -35,16 +34,28 @@ public class Snake implements ActionListener, KeyListener, Stopable {
         } catch (UnknownCommandException ex) {
             Logger.getLogger(Snake.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        try {
+            Thread.sleep(1000);
+            con.showOnScreen('k');
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Snake.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         timer = new Timer(1000, this);
         timer.start();
-        this.con.proc.frame.setResizable(false);
+        this.con.frame.setResizable(false);
         
         gameField = new char[con.text.getColumns()][con.text.getRows()];
     }
     
     @Override
-    public void stop(){
+    public void stop(boolean w){
+        if(isStop)
+            return;
+        
         timer.stop();
+        super.stop(w);
     }
 
     @Override

@@ -12,10 +12,10 @@ import javax.swing.JFrame;
  * @author Andrzej
  */
 public class MyJFrame extends JFrame {
-    Process proc;
+    Stopable proc;
     
-    MyJFrame(String name, Process proc){
-        super(name);
+    public MyJFrame(Stopable proc){
+        super();
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(300, 300);
         
@@ -25,6 +25,6 @@ public class MyJFrame extends JFrame {
     @Override
     public void dispose(){
         super.dispose();
-        proc.remove();
+        proc.stop(Stopable.ALL);
     }
 }

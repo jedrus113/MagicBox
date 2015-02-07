@@ -9,6 +9,20 @@ package canuhackme;
  *
  * @author Andrzej
  */
-public interface Stopable {
-    public void stop();
+public class Stopable {
+    public static final boolean FROM = true, ALL = false;
+    protected boolean isStop = false;
+    protected Stopable up = null, down = null;
+    
+    public synchronized void stop(boolean w){
+        if(isStop)
+            return;
+        
+        isStop = true;
+        if(up != null)
+            up.stop(w);
+        if(down != null && w == ALL)
+            down.stop(w);
+        
+    }
 }

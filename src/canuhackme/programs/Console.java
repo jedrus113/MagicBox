@@ -3,14 +3,22 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package canuhackme;
+package canuhackme.programs;
 
-import canuhackme.programs.Snake;
+import canuhackme.Args;
+import canuhackme.Line;
+import canuhackme.Machine;
+import canuhackme.MyJFrame;
+import canuhackme.Process;
+import canuhackme.Stopable;
+import canuhackme.UnknownCommandException;
 import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFrame;
 import javax.swing.JTextArea;
 import javax.swing.text.BadLocationException;
 
@@ -18,28 +26,42 @@ import javax.swing.text.BadLocationException;
  *
  * @author Andrzej
  */
-public class Console implements KeyListener {
+public class Console extends Stopable implements KeyListener {
+    public final JFrame frame;
     public final String prompt = "-> ";
     public final Process proc;
     public final JTextArea text;
-    private KeyListener kl = null;
-    private Stopable actTask = null;
+    protected KeyListener kl = null;
+    
     Line line = null;
     
-    public Console(Process proc){
-        this.proc = proc;
+    public Console(Process proc, Args arg){
+        down = this.proc = proc;
+        
+        frame = new MyJFrame(this);
+        frame.setLayout(new FlowLayout());
+        frame.setVisible(true);
+        frame.addKeyListener(this);
         
         text = new JTextArea();
         text.addKeyListener(this);
         text.setEditable(false);
-        proc.frame.add(text);
+        frame.add(text);
+        
         showOnScreen("Loading console.. OK\n");
         resetConsole();
+        
+        try {
+            if(arg != null)
+                exeAction(arg);
+        } catch (UnknownCommandException ex) {
+            ex.showErrorMassage();
+        }
     }
     
     public void resetConsole(){
-        proc.frame.setTitle("Console");
-        proc.frame.setResizable(false);
+        frame.setTitle("Console");
+        frame.setResizable(false);
         text.setRows(20);
         text.setColumns(40);
         text.setAutoscrolls(true);
@@ -47,18 +69,21 @@ public class Console implements KeyListener {
         text.setForeground(Color.GREEN);
         
         showOnScreen("\n" + prompt);
-        proc.frame.pack();
+        frame.pack();
         
         line = null;
-        actTask = null;
         kl = null;
+        
+        if(up != null)
+            up.stop(FROM);
+        up = null;
     }
     
     public void giveKeyListener(KeyListener kl){
         this.kl = kl;
     }
     
-    private boolean amIKeyListener(){
+    protected boolean amIKeyListener(){
         return (kl == null);
     }
     
@@ -101,8 +126,7 @@ public class Console implements KeyListener {
                         try {
                             exeAction(line.args());
                     } catch (UnknownCommandException ex) {
-                        showOnScreen("Unknown cmd " + ex.problem + " in\n");
-                        showOnScreen(ex.problem.fullText()+ "\n");
+                        showOnScreen(ex.ProblemMessage());
                     }
                     line = null;
                     if(amIKeyListener())
@@ -126,8 +150,8 @@ public class Console implements KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         if(e.getKeyChar() == 27){    //escape
-            if(actTask != null)
-                actTask.stop();
+            if(up != null)
+                up.stop(FROM);
             resetConsole();
             return;
         }
@@ -145,24 +169,37 @@ public class Console implements KeyListener {
         }
     }
     
+    @Override
+    public synchronized void stop(boolean w){
+        if(isStop)
+            return;
+        
+        super.stop(w);
+        frame.dispose();
+    }
+    
     public int exeAction(Args arg) throws UnknownCommandException{
         if(arg == null)
             return 1;
-        switch(arg.get().toLowerCase()){
+        
+        switch(arg.get(0).toLowerCase()){
             case "new":
-                Machine.mainF.newProcess(arg.getArgsOnly().fullText(), null);
+                Machine.mainF.newProcess(arg.getArgsOnly());
                 break;
             case "exit":
-                proc.remove();
+                stop(ALL);
                 break;
             case "snake":
-                actTask = new Snake(this);
+                up = new Snake(this);
                 break;
             case "cls":
                 text.setText("");
                 break;
             case "title":
-                proc.frame.setTitle(arg.getArgsOnly().fullText());
+                frame.setTitle(arg.getArgsOnly().toString());
+                break;
+            case "shutdown":
+                Machine.mainF.stop(ALL);
                 break;
             case "wait":
                 try {
