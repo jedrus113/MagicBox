@@ -9,55 +9,51 @@ package canuhackme;
  *
  * @author Andrzej
  */
-public class ProcessManager {
-    public class ProcessList{
-        public ProcessList pNext, pPrev;
-        public final Thread t;
+class ProcessManager {
+    
+    private ProcessManager pNext, pPrev;
+    private final Thread t;
+    private static ProcessManager last = null;
 
-        public ProcessList add(Process p){
-            return pNext = new ProcessList(p, this, pNext);
-        }
-
-        public void remove(){
-            if(pNext != null)
-                pNext.pPrev = pPrev;
-            if(pPrev != null)
-                pPrev.pNext = pNext;
-            
-            if(pPrev == null && pNext == null)
-                Machine.mainF.stop(Stopable.ALL);
-            
-        }
-
-        public ProcessList(Process p){
-            pNext = null;
-            pPrev = null;
-
-            t = new Thread(p);
-            p.setT(this);
-        }
-        public ProcessList(Process p, ProcessList pPrev, ProcessList pNext){
-            this.pNext = pNext;
-            this.pPrev = pPrev;
-            t = new Thread(p);
-            p.setT(this);
-        }
-    }
-
-    //nie wszytsko jest publiczne. ;)
-    private ProcessList p;
-
-    public ProcessManager(){
-        p = null;
-    }
-
-    synchronized public void makeProcess(Process n){
-        if(p == null)
-            p = new ProcessList(n);
+    static synchronized void makeProcess(Process p){
+        if(last == null)
+            last = new ProcessManager(p);
         else
-            p = p.add(n);
+            last = last.add(p);
+        
+        last.t.start();
+    }
+    
+    private ProcessManager add(Process p){
+        return pNext = new ProcessManager(p, this, pNext);
+    }
 
-        p.t.start();
+    public void remove(){   // remove by process ok, adding only wia Machine.java
+        if(pNext != null)
+            pNext.pPrev = pPrev;
+        if(pPrev != null){
+            pPrev.pNext = pNext;
+            if(pNext == null)   //if there is no next, then i just remove tha last (from end i mean) process
+                last = pPrev;   //new last
+        }
+
+        if(pPrev == null && pNext == null)
+            Machine.mainF.stop(Stopable.ALL);
+
+    }
+
+    private ProcessManager(Process p){
+        pNext = null;
+        pPrev = null;
+
+        t = new Thread(p);
+        p.setT(this);
+    }
+    private ProcessManager(Process p, ProcessManager pPrev, ProcessManager pNext){
+        this.pNext = pNext;
+        this.pPrev = pPrev;
+        t = new Thread(p);
+        p.setT(this);
     }
     
 }

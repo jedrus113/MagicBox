@@ -48,15 +48,16 @@ public class Console extends Stopable implements KeyListener {
         text.setEditable(false);
         frame.add(text);
         
-        showOnScreen("Loading console.. OK\n");
-        resetConsole();
+        showOnScreen("Loading console.. OK\n\n");
         
         try {
             if(arg != null)
                 exeAction(arg);
         } catch (UnknownCommandException ex) {
-            ex.showErrorMassage();
+            showOnScreen(ex.ProblemMessage() + "\n");
         }
+        
+        resetConsole();
     }
     
     public void resetConsole(){
@@ -68,7 +69,7 @@ public class Console extends Stopable implements KeyListener {
         text.setBackground(Color.BLACK);
         text.setForeground(Color.GREEN);
         
-        showOnScreen("\n" + prompt);
+        showOnScreen( prompt );
         frame.pack();
         
         line = null;
@@ -99,6 +100,7 @@ public class Console extends Stopable implements KeyListener {
         //System.out.print(s);
     }
     public void showOnScreen(String s){
+        //TODO: trying to know whats on screen in real-time
         text.append(s);
         //System.out.print(s);
     }
@@ -126,7 +128,7 @@ public class Console extends Stopable implements KeyListener {
                         try {
                             exeAction(line.args());
                     } catch (UnknownCommandException ex) {
-                        showOnScreen(ex.ProblemMessage());
+                        showOnScreen(ex.ProblemMessage() + "\n");
                     }
                     line = null;
                     if(amIKeyListener())
@@ -184,7 +186,11 @@ public class Console extends Stopable implements KeyListener {
         
         switch(arg.get(0).toLowerCase()){
             case "new":
-                Machine.mainF.newProcess(arg.getArgsOnly());
+                Args argsOnly = arg.getArgsOnly();
+                if(argsOnly != null)
+                    Machine.mainF.newProcess(argsOnly);
+                else
+                    Machine.mainF.newProcess(new Args("cmd"));
                 break;
             case "exit":
                 stop(ALL);

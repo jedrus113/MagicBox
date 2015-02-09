@@ -7,7 +7,8 @@ package canuhackme;
 
 
 /**
- *  main class of this
+ *  main class of this, evert new instance have ti ask this class about enything
+ *  TODO: Shoud i set it static?
  * @author Andrzej
  */
 public class Machine extends Stopable {
@@ -15,15 +16,13 @@ public class Machine extends Stopable {
     public static final Machine mainF = new Machine();
     public final String mainFileName = "trust_me.hak";
     
-    ProcessManager pm = new ProcessManager();
-    
     
     public void newProcess(Args cmds){
-        pm.makeProcess(new Process(cmds));
+        ProcessManager.makeProcess(new Process(cmds));
     }
     
     public void run(){
-        pm.makeProcess(new Process(new Args("cmd")));
+        ProcessManager.makeProcess(new Process(new Args("cmd")));
         
     }
     
@@ -34,9 +33,9 @@ public class Machine extends Stopable {
         
         super.stop(w);
         
-        //TODO: Zapisz prace
+        //TODO: Saving work.. <thinking> or maybe better saving in real time?
         System.out.println("Koncze..");
-        System.exit(0); //nie ma chuja, jak to się konczy to wszystko sie konczy
+        System.exit(0); //everything is over when this is over
     }
     
     public static void main(String... args){

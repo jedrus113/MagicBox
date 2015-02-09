@@ -12,10 +12,10 @@ import canuhackme.programs.Console;
  * @author Andrzej
  */
 public class Process extends Stopable implements Runnable {
-    private ProcessManager.ProcessList th = null;
+    private ProcessManager th = null;
     protected final Args arg;
     
-    public void setT(ProcessManager.ProcessList th){
+    public void setT(ProcessManager th){
         if(this.th == null)
             this.th = th;
         else
@@ -46,10 +46,7 @@ public class Process extends Stopable implements Runnable {
     }
     
     public Process(Args cmd){
-        if(cmd == null)
-            arg = new Args("cmd");
-        else
-            arg = cmd;
+        arg = cmd;
     }
     
     
