@@ -5,12 +5,14 @@
  */
 package canuhackme.programs;
 
+import canuhackme.programs.consols.Snake;
 import canuhackme.Args;
 import canuhackme.Line;
 import canuhackme.Machine;
 import canuhackme.MyJFrame;
 import canuhackme.Stopable;
 import canuhackme.UnknownCommandException;
+import canuhackme.programs.consols.ConsoleProgram;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.KeyEvent;
@@ -26,13 +28,46 @@ import javax.swing.text.BadLocationException;
  * @author Andrzej
  */
 public class Console extends Stopable implements KeyListener {
-    public final JFrame frame;
     public final String prompt = "-> ";
-    public final JTextArea text;
-    protected KeyListener kl = null;
+    
+    private final JFrame frame;
+    private final JTextArea text;
+    private KeyListener kl = null;
     
     Line line = null;
     
+    /*
+        ATTENCION!
+        this setting console for consoleProgram
+    */
+    public Console(ConsoleProgram prog){
+        down = prog;
+        
+        frame = new MyJFrame(this);
+        frame.setLayout(new FlowLayout());
+        frame.setVisible(true);
+        frame.setResizable(false);
+        frame.setTitle(prog.name);
+        frame.addKeyListener(prog);
+        
+        text = new JTextArea();
+        text.setEditable(false);
+        text.setRows(20);
+        text.setColumns(40);
+        //text.setAutoscrolls(true);
+        text.setBackground(Color.BLACK);
+        text.setForeground(Color.GREEN);
+        text.addKeyListener(prog);
+        
+        frame.add(text);
+        frame.pack();
+        
+    }
+    
+    /*
+        ATTENCION!
+        This is starting real console, like with new process.
+    */
     public Console(Stopable proc, Args arg){
         down = proc;
         
@@ -194,24 +229,33 @@ public class Console extends Stopable implements KeyListener {
                 stop(ALL);
                 break;
             case "snake":
-                up = new Snake(this);
+                up = new Snake(this, arg.getArgsOnly());
                 break;
             case "cls":
                 text.setText("");
                 break;
             case "title":
-                frame.setTitle(arg.getArgsOnly().toString());
+                if(arg.getArgsOnly() != null)
+                    frame.setTitle("Console: " + arg.getArgsOnly().toString());
+                else
+                    frame.setTitle("Console");
                 break;
             case "shutdown":
                 Machine.mainF.stop(ALL);
                 break;
             case "wait":
                 try {
-                    Thread.sleep(10000);
+                    Thread.sleep(1000);
                 } catch (InterruptedException ex) {
                     Logger.getLogger(Console.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 break;
+            case "getRows":
+                return text.getRows();
+                //break;
+            case "getColumns":
+                return text.getColumns();
+                //break;
             default:
                 throw new UnknownCommandException(arg);
         }

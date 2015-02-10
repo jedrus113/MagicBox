@@ -70,6 +70,7 @@ public class Args {
             return r;
         }
         
+        //TODO: zastanowić się nad innym przesyłem, żeby zawzse był dostęp do pełnej ścieszki
         public Args getArgsOnly(){
             return getArgsFrom(1);
         }

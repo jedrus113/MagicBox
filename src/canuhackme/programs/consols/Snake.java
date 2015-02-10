@@ -3,15 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package canuhackme.programs;
+package canuhackme.programs.consols;
 
 import canuhackme.Args;
 import canuhackme.Stopable;
 import canuhackme.UnknownCommandException;
+import canuhackme.programs.Console;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.Timer;
@@ -20,34 +20,29 @@ import javax.swing.Timer;
  *
  * @author Andrzej
  */
-public class Snake extends Stopable implements ActionListener, KeyListener {
-    Timer timer;
-    Console con;
+public class Snake extends ConsoleProgram implements ActionListener {
+    Timer timer = new Timer(1000, this);
     char gameField[][];
     
-    public Snake(Console con){
-        down = this.con = con;
-        con.giveKeyListener(this);
+    public Snake(Console con, Args arg){
+        super(con, "Snake");
+        
         try {
             con.exeAction(new Args("cls"));
-            con.exeAction(new Args("title Snake"));
         } catch (UnknownCommandException ex) {
             Logger.getLogger(Snake.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        try {
-            con.showOnScreen('o');
-            Thread.sleep(1000);
-            con.showOnScreen('k');
-        } catch (InterruptedException ex) {
-            Logger.getLogger(Snake.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        timer = new Timer(1000, this);
+        set();
+    }
+    public Snake(Stopable s, Args arg){
+        super(s, "Snake");
+        set();
+    }
+    
+    private void set(){
         timer.start();
-        this.con.frame.setResizable(false);
         
-        gameField = new char[con.text.getColumns()][con.text.getRows()];
     }
     
     @Override
@@ -61,18 +56,25 @@ public class Snake extends Stopable implements ActionListener, KeyListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        
+        console.showOnScreen(name+"\n");
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
-        //System.out.println((int)e.getKeyCode());
+        System.out.println((int)e.getKeyCode());
         
         if(e.getKeyCode() == 38) {
             //gora
 
         } else if(e.getKeyCode() == 40){
             //dol
+            
+        } else if(e.getKeyCode() == 37){
+            //lewo
+            
+        }else if(e.getKeyCode() == 39){
+            //prawo
+            
         }
     }
 

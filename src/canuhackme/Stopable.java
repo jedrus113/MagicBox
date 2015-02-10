@@ -9,7 +9,7 @@ package canuhackme;
  *
  * @author Andrzej
  */
-public class Stopable {
+public abstract class Stopable {
     public static final boolean FROM = true, ALL = false;
     protected boolean isStop = false;
     protected Stopable up = null, down = null;
