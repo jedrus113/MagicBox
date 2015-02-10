@@ -14,7 +14,7 @@ class ProcessManager {
     private ProcessManager pNext, pPrev;
     private final Thread t;
     private static ProcessManager last = null;
-
+    
     static synchronized void makeProcess(Process p){
         if(last == null)
             last = new ProcessManager(p);

@@ -36,6 +36,7 @@ public class Snake extends Stopable implements ActionListener, KeyListener {
         }
         
         try {
+            con.showOnScreen('o');
             Thread.sleep(1000);
             con.showOnScreen('k');
         } catch (InterruptedException ex) {

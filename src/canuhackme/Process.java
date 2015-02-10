@@ -11,7 +11,7 @@ import canuhackme.programs.Console;
  *
  * @author Andrzej
  */
-public class Process extends Stopable implements Runnable {
+class Process extends Stopable implements Runnable {
     private ProcessManager th = null;
     protected final Args arg;
     

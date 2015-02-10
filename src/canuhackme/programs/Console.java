@@ -9,7 +9,6 @@ import canuhackme.Args;
 import canuhackme.Line;
 import canuhackme.Machine;
 import canuhackme.MyJFrame;
-import canuhackme.Process;
 import canuhackme.Stopable;
 import canuhackme.UnknownCommandException;
 import java.awt.Color;
@@ -29,14 +28,13 @@ import javax.swing.text.BadLocationException;
 public class Console extends Stopable implements KeyListener {
     public final JFrame frame;
     public final String prompt = "-> ";
-    public final Process proc;
     public final JTextArea text;
     protected KeyListener kl = null;
     
     Line line = null;
     
-    public Console(Process proc, Args arg){
-        down = this.proc = proc;
+    public Console(Stopable proc, Args arg){
+        down = proc;
         
         frame = new MyJFrame(this);
         frame.setLayout(new FlowLayout());
