@@ -68,7 +68,7 @@ public class Console extends Stopable implements KeyListener {
         ATTENCION!
         This is starting real console, like with new process.
     */
-    public Console(Stopable proc, Args arg){
+    public Console(Stopable proc, Args args){
         down = proc;
         
         frame = new MyJFrame(this);
@@ -83,14 +83,18 @@ public class Console extends Stopable implements KeyListener {
         
         showOnScreen("Loading console.. OK\n\n");
         
+        resetConsole();
+        
         try {
-            if(arg != null)
-                exeAction(arg);
+            if(args != null && !args.end()){
+                showOnScreen(args.toStringLeft());
+                exeAction(args);
+                showOnScreen("\n" + prompt);
+            }
         } catch (UnknownCommandException ex) {
             showOnScreen(ex.ProblemMessage() + "\n");
         }
         
-        resetConsole();
     }
     
     public void resetConsole(){
@@ -214,31 +218,30 @@ public class Console extends Stopable implements KeyListener {
     }
     
     public int exeAction(Args arg) throws UnknownCommandException{
-        if(arg == null)
+        if(arg == null || arg.end())
             return 1;
         
-        switch(arg.get(0).toLowerCase()){
+        switch(arg.get().toLowerCase()){
             case "new":
-                Args argsOnly = arg.getArgsOnly();
-                if(argsOnly != null)
-                    Machine.mainF.newProcess(argsOnly);
-                else
+                if(arg.end())
                     Machine.mainF.newProcess(new Args("cmd"));
+                else
+                    Machine.mainF.newProcess(arg);
                 break;
             case "exit":
                 stop(ALL);
                 break;
             case "snake":
-                up = new Snake(this, arg.getArgsOnly());
+                up = new Snake(this, arg);
                 break;
             case "cls":
                 text.setText("");
                 break;
             case "title":
-                if(arg.getArgsOnly() != null)
-                    frame.setTitle("Console: " + arg.getArgsOnly().toString());
-                else
+                if(arg.end())
                     frame.setTitle("Console");
+                else
+                    frame.setTitle(arg.getArgsOnly().toString());
                 break;
             case "shutdown":
                 Machine.mainF.stop(ALL);
@@ -259,7 +262,6 @@ public class Console extends Stopable implements KeyListener {
             default:
                 throw new UnknownCommandException(arg);
         }
-        
         return 0;
     }
     

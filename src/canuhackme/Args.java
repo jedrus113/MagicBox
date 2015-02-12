@@ -37,8 +37,19 @@ public class Args {
             p=0;
         }
         
+        public boolean end(){
+            return p >= size();
+        }
+        
         public String get(){
+            return get(p++);
+        }
+        
+        public String peek(){
             return get(p);
+        }
+        public String peekLast(){
+            return get(p-1);
         }
         
         public String get(int i){
@@ -70,9 +81,17 @@ public class Args {
             return r;
         }
         
+        public String toStringLeft(){
+            String r = "";
+            
+            for(int i=p; i<args.length; i++)
+                r += args[i] + " ";
+            return r;
+        }
+        
         //TODO: zastanowić się nad innym przesyłem, żeby zawzse był dostęp do pełnej ścieszki
         public Args getArgsOnly(){
-            return getArgsFrom(1);
+            return getArgsFrom(p);
         }
         
         public Args getArgsFrom(int s){

@@ -7,12 +7,14 @@ package canuhackme;
 
 import canuhackme.programs.Console;
 import canuhackme.programs.consols.Snake;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 /**
  *
  * @author Andrzej
  */
-class Process extends Stopable implements Runnable {
+public class Process extends Stopable implements Runnable {
     private ProcessManager th = null;
     protected final Args arg;
     
@@ -23,23 +25,21 @@ class Process extends Stopable implements Runnable {
             throw new IllegalArgumentException();
     }
     
+    
     @Override
-    public void run() {
-        if(arg == null)
-            new UnknownCommandException(arg).showErrorMassage();
-        
-        switch(arg.get(0)){
+    public void run(){
+        switch(arg.get().toLowerCase()){
             case "cmd":
-                up = new Console(this, arg.getArgsOnly());
+                up = new Console(this, arg);
                 break;
             case "snake":
-                up = new Snake(this, arg.getArgsOnly());
+                up = new Snake(this, arg);
                 break;
             default:
-                new UnknownCommandException(arg).showErrorMassage();
-                stop(ALL);
+                JOptionPane.showMessageDialog(null, "Unknown program.", "Error", JOptionPane.WARNING_MESSAGE);
         }
     }
+    
     
     @Override
     public void stop(boolean w){
