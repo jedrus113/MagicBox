@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package canuhackme;
+package magicbox;
 
-import canuhackme.programs.Console;
-import canuhackme.programs.consols.Snake;
+import magicbox.programs.Console;
+import magicbox.programs.consols.Snake;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 

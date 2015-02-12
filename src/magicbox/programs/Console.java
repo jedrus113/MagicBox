@@ -3,16 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package canuhackme.programs;
+package magicbox.programs;
 
-import canuhackme.programs.consols.Snake;
-import canuhackme.Args;
-import canuhackme.Line;
-import canuhackme.Machine;
-import canuhackme.MyJFrame;
-import canuhackme.Stopable;
-import canuhackme.UnknownCommandException;
-import canuhackme.programs.consols.ConsoleProgram;
+import magicbox.programs.consols.Snake;
+import magicbox.Args;
+import magicbox.Line;
+import magicbox.Machine;
+import magicbox.MyJFrame;
+import magicbox.Stopable;
+import magicbox.UnknownCommandException;
+import magicbox.programs.consols.ConsoleProgram;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.KeyEvent;
